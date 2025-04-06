@@ -24,23 +24,18 @@ spec:
         resources:
           kinds:
             - Deployment
-      preconditions:
-        any:
-          - key: "{{ request.object.spec.template.spec.topologySpreadConstraints }}"  # mutate the pod only if topologySpreadConstraints are not explicitly set
-            operator: NotEquals
-            value: ""
       mutate:
         patchStrategicMerge:
           spec:
             template:
               spec:
-                topologySpreadConstraints:
+                +(topologySpreadConstraints): # add topologySpreadConstraints only if it's not yet there
                   - maxSkew: 1
-                    topologyKey: zone 
+                    topologyKey: zone
                     whenUnsatisfiable: ScheduleAnyway
                     labelSelector:
                       matchLabels: "{{ request.object.spec.template.metadata.labels }}"   # dynamically match `this` pod label's
-                  - maxSkew: 1 
+                  - maxSkew: 1
                     topologyKey: kubernetes.io/hostname
                     whenUnsatisfiable: ScheduleAnyway
                     labelSelector:
