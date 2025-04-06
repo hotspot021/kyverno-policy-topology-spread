@@ -1,0 +1,47 @@
+# The policy aims to mutate every pod within a deployment by adding topologySpreadConstraints if they do not exist
+# This helps distribute the load across availability zones AND across hosts within availability zones
+# Every host must have labels used as topologyKey. In this example the label keys are `zone` and `kubernetes.io/hostname`
+# 
+# Example with 6 node k8s cluster and expected behavior
+# workernode1 zone: A
+# workernode2 zone: B
+# workernode3 zone: C
+# workernode4 zone: A
+# workernode5 zone: B
+# workernode6 zone: C
+#
+# Example with scheduling deployment with 5 replicas will _try_ (whenUnsatisfiable: ScheduleAnyway) 
+# to avoid placing pods onto same zone AND onto same node
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: spread-pods-across-zones-and-nodes
+spec:
+  rules:
+    - name: add-topology-spread-constraints
+      match:
+        resources:
+          kinds:
+            - Deployment
+      preconditions:
+        any:
+          - key: "{{ request.object.spec.template.spec.topologySpreadConstraints }}"  # mutate the pod only if topologySpreadConstraints are not explicitly set
+            operator: NotEquals
+            value: ""
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                topologySpreadConstraints:
+                  - maxSkew: 1
+                    topologyKey: zone 
+                    whenUnsatisfiable: ScheduleAnyway
+                    labelSelector:
+                      matchLabels: "{{ request.object.spec.template.metadata.labels }}"   # dynamically match `this` pod label's
+                  - maxSkew: 1 
+                    topologyKey: kubernetes.io/hostname
+                    whenUnsatisfiable: ScheduleAnyway
+                    labelSelector:
+                      matchLabels: "{{ request.object.spec.template.metadata.labels }}"   # dynamically match `this` pod label's
