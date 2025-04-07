@@ -51,6 +51,7 @@ Then just apply the policy.
 Test
 
 > kubectl describe clusterpolicy/spread-pods-across-zones-and-nodes
+
 > kubectl get clusterpolicy/spread-pods-across-zones-and-nodes -o yaml
 
 Create simple deployment and observe the mutation (auto addition) of topologySpreadConstraints
