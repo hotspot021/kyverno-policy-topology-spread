@@ -1,6 +1,6 @@
 # Rationale
 DevOps are responsible for providing working kubernetes cluster with minimum effort for developers to deploy their applications. 
-Developers write their own applications manifests (like Deployment, Services, Ingresses), but they don’t want to deal with AWS related stuff like zones and high availability. 
+Developers write their own applications manifests (like Deployment, Services, Ingresses), but they don’t want to deal with Cloud related stuff like zones and high availability. 
 K8s administrator can enforce some of those rules inside the kubernetes cluster.
 
 # Task
