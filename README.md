@@ -90,5 +90,4 @@ nasko@D7440: /mnt/c/projects/kubernetes/kyverno-policy-topology-spread (main)
     topologyKey: kubernetes.io/hostname
     whenUnsatisfiable: ScheduleAnyway
 nasko@D7440: /mnt/c/projects/kubernetes/kyverno-policy-topology-spread (main)
-
 ```
